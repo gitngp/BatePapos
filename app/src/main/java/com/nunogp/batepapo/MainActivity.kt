@@ -5,6 +5,7 @@ import android.os.Bundle
 //import android.support.design.widget.NavigationView
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -31,4 +32,17 @@ class MainActivity : AppCompatActivity() {
             super.onBackPressed()
         }
     }
+
+    fun loginBtnNavClicked(view: View){
+
+    }
+
+    fun addChannelClicked(view: View){
+
+    }
+
+    fun sendMsgBtnClicked(view: View){
+
+    }
+
 }

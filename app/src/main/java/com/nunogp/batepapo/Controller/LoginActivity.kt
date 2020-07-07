@@ -1,9 +1,10 @@
-package com.nunogp.batepapo
+package com.nunogp.batepapo.Controller
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import com.nunogp.batepapo.R
 
 class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

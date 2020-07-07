@@ -1,9 +1,10 @@
-package com.nunogp.batepapo
+package com.nunogp.batepapo.Controller
 
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import com.nunogp.batepapo.R
 import kotlinx.android.synthetic.main.activity_create_user.*
 import java.util.*
 

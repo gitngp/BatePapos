@@ -117,7 +117,7 @@
         android:layout_marginBottom="8dp"
         android:background="@color/colorPrimary"
         android:onClick="createUserClicked"
-        android:text="Criar usúario"
+        android:text="Criar conta"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -57,16 +57,24 @@ class CreateUserActivity : AppCompatActivity() {
     }
 
     fun createUserClicked(view: View){
+        //user/add
         //ids textfield
-        //val userName = createUserNameText.text.toString()
+        val userName = createUserNameText.text.toString()
         val email = createEmailText.text.toString()
         val password = createPasswordText.text.toString()
+
         AuthService.registerUser(this,email, password){registerSuccess ->
             if (registerSuccess) {
                 AuthService.loginUser(this,email, password){loginSuccess ->
                     if (loginSuccess){
-                        println(AuthService.authToken)
-                        println(AuthService.userEmail)
+                        //println(AuthService.authToken)
+                        //println(AuthService.userEmail)
+                        AuthService.createUser(this, userName, email, userAvatar, avatarColor){createSuccess ->
+                            if (createSuccess){
+                                //dismiss activity
+                                finish()
+                            }
+                        }
                     }
 
                 }

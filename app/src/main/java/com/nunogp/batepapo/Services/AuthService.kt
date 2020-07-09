@@ -32,7 +32,7 @@ object AuthService {
             println(response)
             complete(true)
         },Response.ErrorListener {error ->
-            Log.d("ERROR", "Não foi possivel registar:$error")
+            Log.d("ERROR", "Não foi possivel registrar:$error")
             complete(false)
         } ){
             override fun getBodyContentType(): String {
@@ -85,7 +85,7 @@ object AuthService {
         jsonBody.put("name", name)
         jsonBody.put("email", email)
         jsonBody.put("avatarName", avatarName)
-        jsonBody.put("avtarColor", avatarColor)
+        jsonBody.put("avatarColor", avatarColor)
         val requestBody = jsonBody.toString()
 
         val createRequest = object : JsonObjectRequest(Method.POST, URL_CREATE_USER, null, Response.Listener {response ->
@@ -121,5 +121,4 @@ object AuthService {
         }
         Volley.newRequestQueue(context).add(createRequest)
     }
-
 }

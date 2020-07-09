@@ -16,7 +16,7 @@ import java.util.*
 class CreateUserActivity : AppCompatActivity() {
 
      //nome da imagem se user não quiser outra fica este por defeito
-    var userAvatar = "profileDefault"
+    var userAvatar = "profiledefault"
     //rgb
     var avatarColor = "[0.5, 0.5, 0.5, 1]"
 
@@ -81,7 +81,7 @@ class CreateUserActivity : AppCompatActivity() {
                             AuthService.createUser(this, userName, email, userAvatar, avatarColor){createSuccess ->
                                 if (createSuccess){
 
-                                    //local broeadcast manager  constant
+                                    //enviar local broeadcast manager  constant
                                     val userDataChange = Intent(BROADCAST_USER_DATA_CHANGE)
                                     LocalBroadcastManager.getInstance(this).sendBroadcast(userDataChange)
 

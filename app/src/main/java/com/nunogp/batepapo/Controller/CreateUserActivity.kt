@@ -113,9 +113,6 @@ class CreateUserActivity : AppCompatActivity() {
         enableSpinner(false)
     }
 
-
-
-
     //ligar e desligar spinner
     fun enableSpinner(enable: Boolean){
         if (enable){

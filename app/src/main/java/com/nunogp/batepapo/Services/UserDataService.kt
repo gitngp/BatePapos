@@ -46,5 +46,4 @@ object UserDataService {
         AuthService.isLoggedIn = false
     }
 
-
 }

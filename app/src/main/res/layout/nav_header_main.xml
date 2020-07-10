@@ -7,7 +7,6 @@
     android:layout_height="@dimen/nav_header_height"
     android:background="@color/colorPrimary"
     android:gravity="bottom"
-    android:onClick="addChannelClicked"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <ImageView
@@ -68,6 +67,7 @@
         android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"
         android:background="@android:color/transparent"
+        android:onClick="addChannelClicked"
         android:scaleType="fitXY"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

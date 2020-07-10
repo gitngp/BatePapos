@@ -9,7 +9,11 @@ import android.os.Bundle
 //import android.support.design.widget.Snackbar
 //import android.support.design.widget.NavigationView
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -32,6 +36,7 @@ class MainActivity : AppCompatActivity() {
             this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
+        hideKeyboard()
         //receive broadcast
         LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangeReceiver, IntentFilter(
             BROADCAST_USER_DATA_CHANGE))
@@ -78,11 +83,40 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun addChannelClicked(view: View){
+        if (AuthService.isLoggedIn){
+            val builder = AlertDialog.Builder(this)
+            val dialogView = layoutInflater.inflate(R.layout.add_channel_dialog, null)
 
+            builder.setView(dialogView)
+                    .setPositiveButton("Adicionar"){dialogInterface, i ->
+                        //perform logic when click
+                        val nameTextField = dialogView.findViewById<EditText>(R.id.addChannelNameTxt)
+                        val descTextField = dialogView.findViewById<EditText>(R.id.addChannelDescTxt)
+                        val channelName = nameTextField.text.toString()
+                        val channelDesc = descTextField.text.toString()
+
+                        //create channel with the channel name and description
+                        hideKeyboard()
+                    }
+                .setNegativeButton("Cancelar"){dialogInterface, i ->
+                    //cancel and close the dialog
+                    hideKeyboard()
+                }
+                .show()
+        }else{
+            Toast.makeText(this, "Tem de entrar primeiro.", Toast.LENGTH_SHORT).show()
+        }
     }
 
     fun sendMsgBtnClicked(view: View){
 
+    }
+
+    fun hideKeyboard(){
+        val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        if(inputManager.isAcceptingText){
+            inputManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
+        }
     }
 
 }

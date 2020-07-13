@@ -17,12 +17,15 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.nunogp.batepapo.Model.Channel
 import com.nunogp.batepapo.R
 import com.nunogp.batepapo.Services.AuthService
+import com.nunogp.batepapo.Services.MessageService
 import com.nunogp.batepapo.Services.UserDataService
 import com.nunogp.batepapo.Utilities.BROADCAST_USER_DATA_CHANGE
 import com.nunogp.batepapo.Utilities.SOCKET_URL
 import io.socket.client.IO
+import io.socket.emitter.Emitter
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
@@ -36,6 +39,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
+        //18 socket.On string emiter oi.emit event, listener
+        socket.connect()
+        socket.on("channelCreated", onNewCannel)
+
+
         val toggle = ActionBarDrawerToggle(
             this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
@@ -44,24 +52,19 @@ class MainActivity : AppCompatActivity() {
         //receive broadcast
         LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangeReceiver, IntentFilter(
             BROADCAST_USER_DATA_CHANGE))
-
     }
 
     //17 socket
     override fun onResume() {
-        super.onResume()
         LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangeReceiver,
             IntentFilter(BROADCAST_USER_DATA_CHANGE))
-        socket.connect()
-    }
-    //17 socket
-    override fun onPause() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(userDataChangeReceiver)
-        super.onPause()
+        //socket.connect()
+        super.onResume()
     }
     //17 socket
     override fun onDestroy() {
         socket.disconnect()
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(userDataChangeReceiver)
         super.onDestroy()
     }
 
@@ -134,6 +137,20 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    //18 socket.On create emit listener worker thread
+    private val onNewCannel = Emitter.Listener { args ->
+        // action unit
+        runOnUiThread {
+            val channelName = args[0] as String
+            val channelDescription = args[1] as String
+            val channelId = args[2] as String
+            //           class    model
+            val newChannel = Channel(channelName, channelDescription, channelId )
+            //criar object   no array key.value
+            MessageService.channels.add(newChannel)
+        }
+    }
+
     fun sendMsgBtnClicked(view: View){
         hideKeyboard()
     }
@@ -144,5 +161,4 @@ class MainActivity : AppCompatActivity() {
             inputManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
         }
     }
-
 }

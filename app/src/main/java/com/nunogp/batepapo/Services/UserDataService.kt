@@ -1,6 +1,7 @@
 package com.nunogp.batepapo.Services
 
 import android.graphics.Color
+import com.nunogp.batepapo.Controller.App
 import java.util.*
 
 object UserDataService {
@@ -41,9 +42,14 @@ object UserDataService {
         var avatarName = ""
         var email = ""
         var name = ""
-        AuthService.authToken = ""
-        AuthService.userEmail = ""
-        AuthService.isLoggedIn = false
+
+        //20 shared preferences
+        App.prefs.authToken = ""
+        App.prefs.userEmail = ""
+        App.prefs.isLoggedIn = false
+        //AuthService.authToken = ""
+        //AuthService.userEmail = ""
+        //AuthService.isLoggedIn = false
     }
 
 }

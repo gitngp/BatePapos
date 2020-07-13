@@ -6,6 +6,7 @@ import com.android.volley.Request.Method.GET
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.Volley
+import com.nunogp.batepapo.Controller.App
 import com.nunogp.batepapo.Model.Channel
 import com.nunogp.batepapo.Utilities.URL_GET_CHANNELS
 import org.json.JSONException
@@ -45,10 +46,12 @@ object MessageService {
             override fun getHeaders(): MutableMap<String, String> {
                 //           k v
                 val headers = HashMap<String, String>()
-                headers.put("Authorization", "Bearer ${AuthService.authToken}")
+                headers.put("Authorization", "Bearer ${App.prefs.authToken}")
                 return  headers
             }
         }
-        Volley.newRequestQueue(context).add(channelsRequest)
+        //20 shared preferences
+        App.prefs.requestQueue.add(channelsRequest)
+        //Volley.newRequestQueue(context).add(channelsRequest)
     }
 }

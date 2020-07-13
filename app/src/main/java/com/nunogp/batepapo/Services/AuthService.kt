@@ -9,6 +9,7 @@ import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import com.nunogp.batepapo.Controller.App
 import com.nunogp.batepapo.Utilities.*
 import org.json.JSONException
 import org.json.JSONObject
@@ -16,9 +17,10 @@ import org.json.JSONObject
 //operaçoes envolvam autorizaçao
 object AuthService {
 
-    var isLoggedIn = false
-    var userEmail = ""
-    var authToken = ""
+    //20sharedPreferences comentei
+    //var isLoggedIn = false
+    //var userEmail = ""
+    //var authToken = ""
 
     //context para volley                                              se registration foi sucess ou não devolve unit
     fun registerUser(context:Context, email: String, password: String, complete:(Boolean)-> Unit){
@@ -43,7 +45,9 @@ object AuthService {
                 return requestBody.toByteArray()
             }
         }
-        Volley.newRequestQueue(context).add(registerRequest)
+        //20 shared preferences
+        App.prefs.requestQueue.add(registerRequest)
+        //Volley.newRequestQueue(context).add(registerRequest)
     }
     fun loginUser(context: Context, email: String,password: String, complete: (Boolean) -> Unit){
         val jsonBody = JSONObject()
@@ -54,10 +58,14 @@ object AuthService {
         val loginRequest = object : JsonObjectRequest(Method.POST, URL_LOGIN, null, Response.Listener {response ->
             //this is where parse the json object received
             try {
-                                                // key name in response
-                userEmail = response.getString("user")
-                authToken = response.getString("token")
-                isLoggedIn = true
+                    //20sharedPreferences  elterou-se e deixei comentei
+                    App.prefs.userEmail = response.getString("user")
+                    App.prefs.authToken = response.getString("token")
+                    App.prefs.isLoggedIn = true
+                               // key name in response
+                //userEmail = response.getString("user")
+                //authToken = response.getString("token")
+                //isLoggedIn = true
                 complete(true)
             }catch (e: JSONException){
                 Log.d("JSON", "EXC" + e.localizedMessage)
@@ -77,6 +85,8 @@ object AuthService {
                 return requestBody.toByteArray()
             }
         }
+        //20 shared preferences
+        App.prefs.requestQueue.add(loginRequest)
         Volley.newRequestQueue(context).add(loginRequest)
     }
 
@@ -115,16 +125,18 @@ object AuthService {
 
             override fun getHeaders(): MutableMap<String, String> {
                 val headers = HashMap<String, String>()
-                headers.put("Authorization", "Bearer $authToken")
+                headers.put("Authorization", "Bearer ${App.prefs.authToken}")
                 return headers
             }
         }
-        Volley.newRequestQueue(context).add(createRequest)
+        //20 shared preferences
+        App.prefs.requestQueue.add(createRequest)
+        //Volley.newRequestQueue(context).add(createRequest)
     }
 
     fun findUserByEmail(context: Context, complete: (Boolean) -> Unit){
         //https://appchatbatepapo.herokuapp.com/user/byEmail/jumail
-        val findUserRequest = object : JsonObjectRequest(Method.GET, "$URL_GET_USER$userEmail", null, Response.Listener {response ->
+        val findUserRequest = object : JsonObjectRequest(Method.GET, "$URL_GET_USER${App.prefs.userEmail}", null, Response.Listener {response ->
             try {
                 //guardar json object ordem == postman user/byEmail/email
                 UserDataService.name = response.getString("name")
@@ -150,10 +162,12 @@ object AuthService {
             }
              override fun getHeaders(): MutableMap<String, String> {
                 val headers = HashMap<String, String>()
-                headers.put("Authorization", "Bearer $authToken")
+                headers.put("Authorization", "Bearer ${App.prefs.authToken}")
                 return headers
             }
         }
+        //20 shared preferences
+        App.prefs.requestQueue.add(findUserRequest)
         Volley.newRequestQueue(context).add(findUserRequest)
     }
 }

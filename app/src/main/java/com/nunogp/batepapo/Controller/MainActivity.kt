@@ -21,11 +21,15 @@ import com.nunogp.batepapo.R
 import com.nunogp.batepapo.Services.AuthService
 import com.nunogp.batepapo.Services.UserDataService
 import com.nunogp.batepapo.Utilities.BROADCAST_USER_DATA_CHANGE
+import com.nunogp.batepapo.Utilities.SOCKET_URL
+import io.socket.client.IO
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
 
 class MainActivity : AppCompatActivity() {
+    //socket     uri string
+    val socket = IO.socket(SOCKET_URL)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,12 +40,31 @@ class MainActivity : AppCompatActivity() {
             this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
-        hideKeyboard()
+
         //receive broadcast
         LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangeReceiver, IntentFilter(
             BROADCAST_USER_DATA_CHANGE))
 
     }
+
+    //17 socket
+    override fun onResume() {
+        super.onResume()
+        LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangeReceiver,
+            IntentFilter(BROADCAST_USER_DATA_CHANGE))
+        socket.connect()
+    }
+    //17 socket
+    override fun onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(userDataChangeReceiver)
+        super.onPause()
+    }
+    //17 socket
+    override fun onDestroy() {
+        socket.disconnect()
+        super.onDestroy()
+    }
+
     //create receiver broadcast receiver
     private val userDataChangeReceiver = object : BroadcastReceiver(){
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -96,11 +119,14 @@ class MainActivity : AppCompatActivity() {
                         val channelDesc = descTextField.text.toString()
 
                         //create channel with the channel name and description
-                        hideKeyboard()
+                        //17 socket emit enviar event newChannel, info, info como API code src\index.js
+                        socket.emit("newChannel",channelName, channelDesc )
+
+
                     }
                 .setNegativeButton("Cancelar"){dialogInterface, i ->
                     //cancel and close the dialog
-                    hideKeyboard()
+
                 }
                 .show()
         }else{
@@ -109,7 +135,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun sendMsgBtnClicked(view: View){
-
+        hideKeyboard()
     }
 
     fun hideKeyboard(){

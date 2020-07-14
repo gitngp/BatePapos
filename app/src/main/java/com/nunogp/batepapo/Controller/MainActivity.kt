@@ -1,5 +1,7 @@
-git branchpackage com.nunogp.batepapo.Controller
+package com.nunogp.batepapo.Controller
 
+import com.nunogp.batepapo.Controller.App
+import com.nunogp.batepapo.Controller.LoginActivity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -20,6 +22,7 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.isEmpty
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.nunogp.batepapo.Model.Channel
+import com.nunogp.batepapo.Model.Message
 import com.nunogp.batepapo.R
 import com.nunogp.batepapo.Services.AuthService
 import com.nunogp.batepapo.Services.MessageService
@@ -44,13 +47,10 @@ class MainActivity : AppCompatActivity() {
 
     //19 down chanels
     private fun setupAdapters(){
-       //
-        //if (MessageService.channels.isEmpty()) {
+
             channelAdapter =  ArrayAdapter(this, android.R.layout.simple_list_item_1, MessageService.channels)
             //view ID
             channel_list.adapter = channelAdapter
-        //}
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,6 +61,8 @@ class MainActivity : AppCompatActivity() {
         //18 socket.On string emiter oi.emit event, listener
         socket.connect()
         socket.on("channelCreated", onNewCannel)
+        //22 send receive message
+        socket.on("messageCreated", onNewMessage)
 
         val toggle = ActionBarDrawerToggle(
             this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
@@ -69,7 +71,7 @@ class MainActivity : AppCompatActivity() {
         //down chanels
         setupAdapters()
 
-            //20 shared preferences id listview int long select channnel
+            //21 select channels id listview int long select channnel
          channel_list.setOnItemClickListener { _, _, i, _ ->
             selectedChannel = MessageService.channels[i]
             //esconder menu
@@ -206,8 +208,37 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    //22 send receive message
+    private val onNewMessage = Emitter.Listener {args ->
+        runOnUiThread {
+            val msgBody = args[0] as String
+            val channelId = args[2] as String
+            val userName = args[3] as String
+            val userAvatar = args[4] as String
+            val userAvatarColor = args[5] as String
+            val id = args[6] as String
+            val timeStamp = args[7] as String
+
+            val newMessage = Message(msgBody, userName, channelId, userAvatar, userAvatarColor, id, timeStamp)
+            MessageService.messages.add(newMessage)
+            println(newMessage.message)
+        }
+        
+    }
+
     fun sendMsgBtnClicked(view: View){
-        hideKeyboard()
+        //22 send receive message
+        if (App.prefs.isLoggedIn && messageTextField.text.isNotEmpty() && selectedChannel != null){
+            val  userId = UserDataService.id
+            val channelId = selectedChannel!!.id
+            //ordem como API emviar mensagem
+            socket.emit("newMessage", messageTextField.text.toString(), userId, channelId,
+                UserDataService.name, UserDataService.avatarName, UserDataService.avatarColor)
+            messageTextField.text.clear()
+            hideKeyboard()
+        }
+
+
     }
 
     fun hideKeyboard(){

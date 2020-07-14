@@ -8,6 +8,7 @@ import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.Volley
 import com.nunogp.batepapo.Controller.App
 import com.nunogp.batepapo.Model.Channel
+import com.nunogp.batepapo.Model.Message
 import com.nunogp.batepapo.Utilities.URL_GET_CHANNELS
 import org.json.JSONException
 
@@ -15,6 +16,9 @@ import org.json.JSONException
 object MessageService {
     //                    Channel class model  vazio
     val channels = ArrayList<Channel>()
+    //22 send receive message
+    val messages = ArrayList<Message>()
+
 //20shared preferences não precisa de context
     fun getChannels(/*context: Context,*/ complete: (Boolean) -> Unit){
         val channelsRequest = object : JsonArrayRequest(GET, URL_GET_CHANNELS, null, Response.Listener {response ->

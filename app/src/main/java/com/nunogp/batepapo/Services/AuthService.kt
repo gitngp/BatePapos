@@ -22,8 +22,8 @@ object AuthService {
     //var userEmail = ""
     //var authToken = ""
 
-    //context para volley                                              se registration foi sucess ou não devolve unit
-    fun registerUser(context:Context, email: String, password: String, complete:(Boolean)-> Unit){
+    //context para volley    20shared preferences não precisa de context                                           se registration foi sucess ou não devolve unit
+    fun registerUser(/*context:Context,*/ email: String, password: String, complete:(Boolean)-> Unit){
 
         val jsonBody = JSONObject()
         jsonBody.put("email", email)
@@ -48,8 +48,8 @@ object AuthService {
         //20 shared preferences
         App.prefs.requestQueue.add(registerRequest)
         //Volley.newRequestQueue(context).add(registerRequest)
-    }
-    fun loginUser(context: Context, email: String,password: String, complete: (Boolean) -> Unit){
+    }//20shared preferences não precisa de context
+    fun loginUser(/*context: Context,*/ email: String,password: String, complete: (Boolean) -> Unit){
         val jsonBody = JSONObject()
         jsonBody.put("email", email)
         jsonBody.put("password", password)
@@ -87,10 +87,10 @@ object AuthService {
         }
         //20 shared preferences
         App.prefs.requestQueue.add(loginRequest)
-        Volley.newRequestQueue(context).add(loginRequest)
+        //Volley.newRequestQueue(context).add(loginRequest)
     }
-
-    fun createUser(context: Context, name: String, email: String, avatarName: String, avatarColor: String, complete: (Boolean) -> Unit){
+//20shared preferences não precisa de context
+    fun createUser(/*context: Context,*/ name: String, email: String, avatarName: String, avatarColor: String, complete: (Boolean) -> Unit){
         val jsonBody = JSONObject()
         jsonBody.put("name", name)
         jsonBody.put("email", email)

@@ -15,8 +15,8 @@ import org.json.JSONException
 object MessageService {
     //                    Channel class model  vazio
     val channels = ArrayList<Channel>()
-
-    fun getChannels(context: Context, complete: (Boolean) -> Unit){
+//20shared preferences não precisa de context
+    fun getChannels(/*context: Context,*/ complete: (Boolean) -> Unit){
         val channelsRequest = object : JsonArrayRequest(GET, URL_GET_CHANNELS, null, Response.Listener {response ->
             try {
                   for (x in 0 until response.length()){

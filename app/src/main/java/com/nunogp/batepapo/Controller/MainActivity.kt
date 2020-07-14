@@ -1,4 +1,4 @@
-package com.nunogp.batepapo.Controller
+git branchpackage com.nunogp.batepapo.Controller
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -17,6 +17,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.core.view.isEmpty
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.nunogp.batepapo.Model.Channel
 import com.nunogp.batepapo.R
@@ -29,6 +30,7 @@ import io.socket.client.IO
 import io.socket.emitter.Emitter
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -37,12 +39,18 @@ class MainActivity : AppCompatActivity() {
 
     //19 down chanels                        model
     lateinit var channelAdapter: ArrayAdapter<Channel>
+    //21 select channels model null pode nao haver e antes de fazer login
+    var selectedChannel: Channel? = null
+
     //19 down chanels
     private fun setupAdapters(){
        //
-        channelAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, MessageService.channels )
-        //view ID
-        channel_list.adapter = channelAdapter
+        //if (MessageService.channels.isEmpty()) {
+            channelAdapter =  ArrayAdapter(this, android.R.layout.simple_list_item_1, MessageService.channels)
+            //view ID
+            channel_list.adapter = channelAdapter
+        //}
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,6 +68,15 @@ class MainActivity : AppCompatActivity() {
         toggle.syncState()
         //down chanels
         setupAdapters()
+
+            //20 shared preferences id listview int long select channnel
+         channel_list.setOnItemClickListener { _, _, i, _ ->
+            selectedChannel = MessageService.channels[i]
+            //esconder menu
+            drawer_layout.closeDrawer(GravityCompat.START)
+            updateWithChannel()
+
+        }
 
         //20 shared preferences
         if (App.prefs.isLoggedIn){
@@ -84,7 +101,6 @@ class MainActivity : AppCompatActivity() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(userDataChangeReceiver)
         super.onDestroy()
     }
-
     //create receiver broadcast receiver
     private val userDataChangeReceiver = object : BroadcastReceiver(){
         override fun onReceive(context: Context, intent: Intent?) {
@@ -98,15 +114,29 @@ class MainActivity : AppCompatActivity() {
                 //em vez de dizer entrar depois de passa a ser sair
                 loginBtnNavHeader.text = "Sair"
 
-                //down chanels 1
-                MessageService.getChannels(context){complete ->
+                //down chanels 1  20shared preferences não precisa de context
+                MessageService.getChannels(/*context*/){complete ->
                     if (complete) {
-                        //reload if datachange
-                        channelAdapter.notifyDataSetChanged()
+                        //21 channel selection if default apresenta 1º channel no array
+                        if (MessageService.channels.count() > 0 ){
+                                //mainChannelName.text = "Selecione um canal"
+                                selectedChannel = MessageService.channels[0]
+                                //reload if datachange
+                                channelAdapter.notifyDataSetChanged()
+                                updateWithChannel()
+                        }
+
                     }
                 }
             }
         }
+    }
+
+    // 21 channel selection textview com nome de channel
+    fun updateWithChannel(){
+       //id textview
+        mainChannelName.text = "#${selectedChannel?.name}"
+        //download messages for channels
     }
 
     override fun onBackPressed() {
@@ -138,8 +168,8 @@ class MainActivity : AppCompatActivity() {
             val builder = AlertDialog.Builder(this)
             val dialogView = layoutInflater.inflate(R.layout.add_channel_dialog, null)
 
-            builder.setView(dialogView)
-                    .setPositiveButton("Adicionar"){dialogInterface, i ->
+            builder.setView(dialogView)// 20shared preferences _
+                    .setPositiveButton("Adicionar"){/*dialogInterface*/_, /*i*/_ ->
                         //perform logic when click
                         val nameTextField = dialogView.findViewById<EditText>(R.id.addChannelNameTxt)
                         val descTextField = dialogView.findViewById<EditText>(R.id.addChannelDescTxt)
@@ -150,11 +180,9 @@ class MainActivity : AppCompatActivity() {
                         //17 socket emit enviar event newChannel, info, info como API code src\index.js
                         socket.emit("newChannel",channelName, channelDesc )
 
-
-                    }
-                .setNegativeButton("Cancelar"){dialogInterface, i ->
+                    } //20shared preferences substitui  _
+                .setNegativeButton("Cancelar"){/*dialogInterface*/_, /*i*/_ ->
                     //cancel and close the dialog
-
                 }
                 .show()
         }else{

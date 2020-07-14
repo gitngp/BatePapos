@@ -72,13 +72,16 @@ class CreateUserActivity : AppCompatActivity() {
 
         //verificar se textfield tem text por password maior que 6
         if (userName.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()){
-            AuthService.registerUser(this,email, password){registerSuccess ->
+            //20shared preferences não precisa de context
+            AuthService.registerUser(/*this,*/email, password){registerSuccess ->
                 if (registerSuccess) {
-                    AuthService.loginUser(this,email, password){loginSuccess ->
+                    //20shared preferences não precisa de context
+                    AuthService.loginUser(/*this,*/email, password){loginSuccess ->
                         if (loginSuccess){
                             //println(AuthService.authToken)
                             //println(AuthService.userEmail)
-                            AuthService.createUser(this, userName, email, userAvatar, avatarColor){createSuccess ->
+                            //20shared preferences não precisa de context
+                            AuthService.createUser(/*this,*/ userName, email, userAvatar, avatarColor){createSuccess ->
                                 if (createSuccess){
 
                                     //enviar local broeadcast manager  constant

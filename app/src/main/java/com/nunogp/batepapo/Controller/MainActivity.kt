@@ -21,6 +21,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.core.view.isEmpty
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.nunogp.batepapo.Adapters.MessageAdapter
 import com.nunogp.batepapo.Model.Channel
 import com.nunogp.batepapo.Model.Message
 import com.nunogp.batepapo.R
@@ -45,12 +47,22 @@ class MainActivity : AppCompatActivity() {
     //21 select channels model null pode nao haver e antes de fazer login
     var selectedChannel: Channel? = null
 
+    //24 display messages
+    lateinit var messageAdapter: MessageAdapter
+
     //19 down chanels
     private fun setupAdapters(){
 
-            channelAdapter =  ArrayAdapter(this, android.R.layout.simple_list_item_1, MessageService.channels)
-            //view ID
-            channel_list.adapter = channelAdapter
+        channelAdapter =  ArrayAdapter(this, android.R.layout.simple_list_item_1, MessageService.channels)
+        //view ID
+        channel_list.adapter = channelAdapter
+        //24 display messages
+        messageAdapter = MessageAdapter(this, MessageService.messages)
+        //id recycleview
+        messageListView.adapter = messageAdapter
+        val layoutManager = LinearLayoutManager(this)
+        messageListView.layoutManager = layoutManager
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -142,10 +154,15 @@ class MainActivity : AppCompatActivity() {
         if (selectedChannel != null){
             MessageService.getMessages(selectedChannel!!.id){complete ->
                if (complete){
-                  for (message in MessageService.messages){
-                      println(message.message)
-                  }
-
+                 // 24 display adapter comentei o for
+                   // for (message in MessageService.messages){
+                   //   println(message.message)
+                  //}
+                  //update message
+                   messageAdapter.notifyDataSetChanged()
+                   if (messageAdapter.itemCount > 0) {
+                      messageListView.smoothScrollToPosition(messageAdapter.itemCount - 1)
+                   }
                }
 
             }
@@ -166,6 +183,10 @@ class MainActivity : AppCompatActivity() {
         if (App.prefs.isLoggedIn){
             //logout sair
             UserDataService.logout()
+            //24 display adapter
+            channelAdapter.notifyDataSetChanged()
+            messageAdapter.notifyDataSetChanged()
+
             userNameNavHeader.text = "Nome"
             userEmailNavHeader.text = "Email"
             userImageNavHeader.setImageResource(R.drawable.profiledefault)
@@ -243,6 +264,10 @@ class MainActivity : AppCompatActivity() {
                        userAvatarColor, id, timeStamp)
                    MessageService.messages.add(newMessage)
                    //println(newMessage.message)
+                    //24 display adapter update message
+                    messageAdapter.notifyDataSetChanged()
+                    messageListView.smoothScrollToPosition(messageAdapter.itemCount - 1)
+
                }
             }
         }

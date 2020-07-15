@@ -138,7 +138,19 @@ class MainActivity : AppCompatActivity() {
     fun updateWithChannel(){
        //id textview
         mainChannelName.text = "#${selectedChannel?.name}"
-        //download messages for channels
+        //23 download messages for channels
+        if (selectedChannel != null){
+            MessageService.getMessages(selectedChannel!!.id){complete ->
+               if (complete){
+                  for (message in MessageService.messages){
+                      println(message.message)
+                  }
+
+               }
+
+            }
+        }
+
     }
 
     override fun onBackPressed() {
@@ -194,36 +206,46 @@ class MainActivity : AppCompatActivity() {
 
     //18 socket.On create emit listener worker thread
     private val onNewCannel = Emitter.Listener { args ->
-        // action unit
-        runOnUiThread {
-            val channelName = args[0] as String
-            val channelDescription = args[1] as String
-            val channelId = args[2] as String
-            //           class    model
-            val newChannel = Channel(channelName, channelDescription, channelId )
-            //criar object   no array key.value
-            MessageService.channels.add(newChannel)
-            //19 down chanels update reload view
-            channelAdapter.notifyDataSetChanged()
+        //verifica login
+        if (App.prefs.isLoggedIn) {
+            // action unit
+            runOnUiThread {
+                val channelName = args[0] as String
+                val channelDescription = args[1] as String
+                val channelId = args[2] as String
+                //           class    model
+                val newChannel = Channel(channelName, channelDescription, channelId)
+                //criar object   no array key.value
+                MessageService.channels.add(newChannel)
+                //19 down chanels update reload view
+                channelAdapter.notifyDataSetChanged()
+            }
         }
     }
 
     //22 send receive message
     private val onNewMessage = Emitter.Listener {args ->
-        runOnUiThread {
-            val msgBody = args[0] as String
-            val channelId = args[2] as String
-            val userName = args[3] as String
-            val userAvatar = args[4] as String
-            val userAvatarColor = args[5] as String
-            val id = args[6] as String
-            val timeStamp = args[7] as String
+        //verifica login
+        if (App.prefs.isLoggedIn) {
+            runOnUiThread {
+                val channelId = args[2] as String
+               //verifica canal da message
+                if (channelId == selectedChannel?.id) {
+                   val msgBody = args[0] as String
+                   val userName = args[3] as String
+                   val userAvatar = args[4] as String
+                   val userAvatarColor = args[5] as String
+                   val id = args[6] as String
+                   val timeStamp = args[7] as String
 
-            val newMessage = Message(msgBody, userName, channelId, userAvatar, userAvatarColor, id, timeStamp)
-            MessageService.messages.add(newMessage)
-            println(newMessage.message)
+                   val newMessage = Message(
+                       msgBody, userName, channelId, userAvatar,
+                       userAvatarColor, id, timeStamp)
+                   MessageService.messages.add(newMessage)
+                   //println(newMessage.message)
+               }
+            }
         }
-        
     }
 
     fun sendMsgBtnClicked(view: View){
@@ -237,7 +259,6 @@ class MainActivity : AppCompatActivity() {
             messageTextField.text.clear()
             hideKeyboard()
         }
-
 
     }
 

@@ -50,6 +50,10 @@ object UserDataService {
         //AuthService.authToken = ""
         //AuthService.userEmail = ""
         //AuthService.isLoggedIn = false
+        // 23 downloading messages
+        //esvaziar arrays de messages e channels ao sair
+        MessageService.clearChannels()
+        MessageService.clearMessages()
     }
 
 }

@@ -10,6 +10,7 @@ import com.nunogp.batepapo.Controller.App
 import com.nunogp.batepapo.Model.Channel
 import com.nunogp.batepapo.Model.Message
 import com.nunogp.batepapo.Utilities.URL_GET_CHANNELS
+import com.nunogp.batepapo.Utilities.URL_GET_MESSAGES
 import org.json.JSONException
 
 //19 down channels
@@ -58,4 +59,63 @@ object MessageService {
         App.prefs.requestQueue.add(channelsRequest)
         //Volley.newRequestQueue(context).add(channelsRequest)
     }
+// 23 downloading messages
+    fun getMessages(channelId: String, complete: (Boolean) -> Unit){
+        val url = "$URL_GET_MESSAGES$channelId"
+
+        val messagesRequest = object :JsonArrayRequest(Method.GET, url, null, Response.Listener {response ->
+            clearMessages()
+            try {//se não for response pode ser it
+                for (x in 0 until response.length()){
+                    val message = response.getJSONObject(x)//name = postman
+                    val messageBody = message.getString("messageBody")
+                    val userId = message.getString("userId")
+                    val channelId = message.getString("channelId")
+                    val id = message.getString("_id")
+                    val userName = message.getString("userName")
+                    val userAvatar = message.getString("userAvatar")
+                    val userAvatarColor = message.getString("userAvatarColor")
+                    val timeStamp = message.getString("timeStamp")
+
+                    //Message model,
+                    val newMessage = Message(messageBody, userName, channelId, userAvatar,
+                        userAvatarColor, id, timeStamp)
+                    this.messages.add(newMessage)
+                }
+                complete(true)
+            }catch (e: JSONException){
+                Log.d("JSON", "EXC" + e.localizedMessage)
+                complete(false)
+            }
+        }, Response.ErrorListener {error ->
+            Log.d("ERROR", "Não foi possível devolver canais, tente outra vez.")
+            complete(false)
+        }){
+            override fun getBodyContentType(): String {
+                return "application/json; charset=utf-8"
+            }
+
+            override fun getHeaders(): MutableMap<String, String> {
+                //           k v
+                val headers = HashMap<String, String>()
+                headers.put("Authorization", "Bearer ${App.prefs.authToken}")
+                return  headers
+            }
+
+        }
+        App.prefs.requestQueue.add(messagesRequest)
+    }
+
+    // 23 downloading messages
+    // esvaziar array ao mudar de canal e no logout
+    fun clearMessages(){
+        messages.clear()
+    }
+
+    // 23 downloading messages
+    //esvaziar array channels
+    fun clearChannels (){
+        channels.clear()
+    }
+
 }

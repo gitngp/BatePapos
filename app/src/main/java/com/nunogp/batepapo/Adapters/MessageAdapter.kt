@@ -1,6 +1,8 @@
 package com.nunogp.batepapo.Adapters
 
 import android.content.Context
+import android.net.ParseException
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.nunogp.batepapo.Model.Message
 import com.nunogp.batepapo.R
 import com.nunogp.batepapo.Services.UserDataService
-import java.util.ArrayList
+import java.text.SimpleDateFormat
+import java.util.*
 
 //24 display messages
 
@@ -31,11 +34,32 @@ class MessageAdapter(val context: Context, val messages: ArrayList<Message>) : R
           userImage?.setImageResource(resourceId)
           userImage?.setBackgroundColor(UserDataService.returnAvatarColor(message.userAvatarColor))
           userName?.text = message.userName
-          timeStamp?.text = message.timeStamp
+          //25 date formatter comentei substitui por fun
+          //timeStamp?.text = message.timeStamp
+          timeStamp?.text = returnDateString(message.timeStamp)
           messageBody?.text = message.message
 
 
       }
+    //25 date formatter
+    fun returnDateString(isoString: String): String{
+        //2017-09-11T01:16:13.858Z como está agora -> Monday 4:35 PM
+        //pattern o que está em cima
+        val isoFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+        isoFormatter.timeZone = TimeZone.getTimeZone("UTC")
+        var convertDate = Date()
+        try {
+            //parse string to date object
+            convertDate = isoFormatter.parse(isoString)
+        }catch (e: ParseException){
+            Log.d("PARSE", "Can not parse date")
+        }
+        //fazer outro patern format
+        val outDateString = SimpleDateFormat("E d L y, h:mm a ", Locale.getDefault())
+        // format date:date
+        return outDateString.format(convertDate)
+
+    }
 
     }
 

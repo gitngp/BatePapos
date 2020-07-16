@@ -43,6 +43,7 @@ class LoginActivity : AppCompatActivity() {
             }
         }else{
             Toast.makeText(this, "Todos os campos têm de estar preenchidos.", Toast.LENGTH_LONG).show()
+            enableSpinner(false)
         }
     }
 
@@ -54,7 +55,7 @@ class LoginActivity : AppCompatActivity() {
 
     //mensagens de erro para registo e login
     fun errorToast(){
-        Toast.makeText(this, "Algo correu mal, por favor tente outra vez.", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, "Algo correu mal,possivel dado incorreto, por favor tente outra vez.", Toast.LENGTH_LONG).show()
         enableSpinner(false)
     }
 

@@ -82,6 +82,9 @@ class MainActivity : AppCompatActivity() {
         toggle.syncState()
         //down chanels
         setupAdapters()
+        //25 data formatter de onresume 2 linhas abaixo
+        LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangeReceiver,
+            IntentFilter(BROADCAST_USER_DATA_CHANGE))
 
             //21 select channels id listview int long select channnel
          channel_list.setOnItemClickListener { _, _, i, _ ->
@@ -102,13 +105,17 @@ class MainActivity : AppCompatActivity() {
           //  BROADCAST_USER_DATA_CHANGE))
     }
 
+    //25 date formatter comentado para não duplicar canais ao fazer login varias vezes
+    //passou para oncreate abaixo setupAdapters() posso apagar fun onResume
     //17 socket
-    override fun onResume() {
-        LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangeReceiver,
-            IntentFilter(BROADCAST_USER_DATA_CHANGE))
+   // override fun onResume() {
+        //25 date formatter comentado para não duplicar canais ao fazer login varias vezes
+        //passou para oncreate abaixo setupAdapters()
+        //LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangeReceiver,
+        //    IntentFilter(BROADCAST_USER_DATA_CHANGE))
         //socket.connect()
-        super.onResume()
-    }
+      //  super.onResume()
+    //}
     //17 socket
     override fun onDestroy() {
         socket.disconnect()
@@ -192,6 +199,7 @@ class MainActivity : AppCompatActivity() {
             userImageNavHeader.setImageResource(R.drawable.profiledefault)
             userImageNavHeader.setBackgroundColor(Color.TRANSPARENT)
             loginBtnNavHeader.text = "Entrar"
+            mainChannelName.text = "Entre na conta"
         }else {
             val loginIntent = Intent(this, LoginActivity::class.java)
             startActivity(loginIntent)
